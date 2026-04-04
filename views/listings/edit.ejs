@@ -1,0 +1,47 @@
+<%- layout('layouts/boilerplate') -%>
+
+    <div class="row">
+        <div class="col-8 offset-2">
+            <h3>Edit your listing</h3>
+            <form method="POST" action="/listings/<%= listing._id %>?_method=PUT" novalidate class="needs-validation">
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input name="title" placeholder="enter your title" type="text" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <!-- Fixed: Use <textarea> instead of <input textarea> -->
+                    <textarea name="description" placeholder="enter your description" class="form-control"
+                        required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="image" class="form-label">Image</label>
+                    <input name="image" placeholder="enter image URL/Link" type="text" class="form-control" required>
+                </div>
+
+                <div class="row">
+                    <div class="mb-3 col-4">
+                        <label for="price" class="form-label">Price</label>
+                        <input name="price" placeholder="enter price" type="number" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3 col-3">
+                        <label for="country" class="form-label">Country</label>
+                        <input name="country" placeholder="enter your country" type="text" class="form-control"
+                            required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <input name="location" placeholder="enter location" type="text" class="form-control">
+                </div>
+
+                <br><br>
+                <button class="btn btn-dark">Save Changes</button> <!-- Changed text to Save Changes -->
+            </form>
+        </div>
+    </div>
+    <script src="/js/script.js"></script>
