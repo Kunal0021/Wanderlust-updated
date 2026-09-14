@@ -6,21 +6,84 @@ const express = require("express");
 const app = express();
 
 const mongoose = require("mongoose");
-const Listing = require("./listing.js"); // Fixed path
+const Listing = require("./listing.js");
+const jwt = require("jsonwebtoken");
+const User = require("./models/user");
+
+
 const path = require("path");
 const ejsMate = require("ejs-mate");
-const methodOverride = require("method-override"); // 1. Require the package
+const cookieParser = require("cookie-parser");
+const authRoutes = require("./routes/auth");
+const authenticateUser = require("./middleware/auth");
+const methodOverride = require("method-override");
 
-const dbUrl = process.env.ATLASDB_URL || "mongodb+srv://Wanderlust_admin:YAdJ9amNQPYIg800@cluster0.dxkke8w.mongodb.net/myapp";
+const dbUrl =
+  process.env.ATLASDB_URL ||
+  "mongodb+srv://Wanderlust_admin:YAdJ9amNQPYIg800@cluster0.dxkke8w.mongodb.net/myapp";
+
+
+// ====================
+// App Configuration
+// ====================
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.use(express.urlencoded({ extended: true }));
-app.engine('ejs', ejsMate);
-app.use(express.static(path.join(__dirname, "/public")));
 
-// 2. Configure method-override to look for ?_method=PUT/DELETE in the URL
+
+// ====================
+// Middleware
+// ====================
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.use(cookieParser());
+app.use(async (req, res, next) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    res.locals.currentUser = null;
+    return next();
+  }
+
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
+
+    const user = await User.findById(decoded.userId);
+
+    res.locals.currentUser = user || null;
+
+  } catch (error) {
+    res.locals.currentUser = null;
+  }
+
+  next();
+});
+
+
+
+
 app.use(methodOverride("_method"));
+
+app.engine("ejs", ejsMate);
+
+app.use(express.static(path.join(__dirname, "public")));
+
+
+// ====================
+// Authentication Routes
+// ====================
+
+app.use("/auth", authRoutes);
+
+
+// ====================
+// Database
+// ====================
 
 main()
   .then(() => {
@@ -34,99 +97,214 @@ async function main() {
   await mongoose.connect(dbUrl);
 }
 
+
+// ====================
+// Home Route
+// ====================
+
 app.get("/", (req, res) => {
   res.send("Hi, I am root");
 });
 
+
+// ====================
+// Listing Routes
+// ====================
+
 // Index route
 app.get("/listings", async (req, res) => {
   const allListings = await Listing.find({});
-  res.render("./listings/index.ejs", { allListings });
-})
+  res.render("listings/index.ejs", { allListings });
+});
 
-// Create new route (Get)
-app.get("/listings/new", (req, res) => {
+
+// Create new listing page
+// 🔐 Login required
+app.get("/listings/new", authenticateUser, (req, res) => {
   res.render("listings/new.ejs");
-})
+});
+
 
 // Show route
 app.get("/listings/:id", async (req, res) => {
-  let { id } = req.params;
-  const listing = await Listing.findById(id);
-  res.render("listings/show.ejs", { listing });
-})
+  const { id } = req.params;
 
-// Create route (Post)
-app.post("/listings", async (req, res) => {
-  let { title, description, image, price, location, country } = req.body;
+  const listing = await Listing.findById(id);
+
+  res.render("listings/show.ejs", { listing });
+});
+
+
+// Create listing
+// 🔐 Login required
+app.post("/listings", authenticateUser, async (req, res) => {
+  const {
+    title,
+    description,
+    image,
+    price,
+    location,
+    country
+  } = req.body;
 
   const newListing = new Listing({
-    title: title,
-    description: description,
-    image: { url: image },
-    price: price,
-    location: location,
-    country: country
+    title,
+    description,
+    image: {
+      url: image
+    },
+    price,
+    location,
+    country,
+
+    // 👇 Connect listing to logged-in user
+    owner: req.user.userId
   });
 
   await newListing.save();
+
   res.redirect("/listings");
 });
 
-// Edit route (Get)
-app.get("/listings/:id/edit", async (req, res) => {
-  let { id } = req.params;
-  const listing = await Listing.findById(id);
-  res.render("listings/edit.ejs", { listing });
-})
 
-// 3. Update Route (Put) - This was missing
-app.put("/listings/:id", async (req, res) => {
-  let { id } = req.params;
-  let { title, description, image, price, location, country } = req.body;
+// Edit page
+// 🔐 Login required
+app.get(
+  "/listings/:id/edit",
+  authenticateUser,
+  async (req, res) => {
+    const { id } = req.params;
 
-  await Listing.findByIdAndUpdate(id, {
-    title: title,
-    description: description,
-    image: { url: image }, // Ensure image is wrapped in object
-    price: price,
-    location: location,
-    country: country
-  });
+    const listing = await Listing.findById(id);
 
-  res.redirect(`/listings/${id}`);
-});
+    if (!listing) {
+      return res.status(404).send("Listing not found");
+    }
 
-// Delete Route
-app.delete("/listings/:id", async (req, res) => {
-  let { id } = req.params;
-  await Listing.findByIdAndDelete(id);
-  res.redirect("/listings");
-});
+    if (!listing.owner || listing.owner.toString() !== req.user._id.toString()) {
+      return res.status(403).send("You are not allowed to edit this listing");
+    }
 
-// Sample data route
+    res.render("listings/edit.ejs", { listing });
+  }
+);
+
+
+// Update listing
+// 🔐 Login required
+app.put(
+  "/listings/:id",
+  authenticateUser,
+  async (req, res) => {
+    const { id } = req.params;
+
+    const {
+      title,
+      description,
+      image,
+      price,
+      location,
+      country
+    } = req.body;
+
+    const listing = await Listing.findById(id);
+
+    if (!listing) {
+      return res.status(404).send("Listing not found");
+    }
+
+    // Authorization check
+    if (listing.owner.toString() !== req.user.userId) {
+      return res
+        .status(403)
+        .send("You are not allowed to edit this listing");
+    }
+
+    await Listing.findByIdAndUpdate(id, {
+      title,
+      description,
+      image: {
+        url: image
+      },
+      price,
+      location,
+      country
+    });
+
+    res.redirect(`/listings/${id}`);
+  }
+);
+
+
+// Delete listing
+// 🔐 Login required
+app.delete(
+  "/listings/:id",
+  authenticateUser,
+  async (req, res) => {
+    const { id } = req.params;
+
+    const listing = await Listing.findById(id);
+
+    if (!listing) {
+      return res.status(404).send("Listing not found");
+    }
+
+    // Authorization check
+    if (listing.owner.toString() !== req.user.userId) {
+      return res
+        .status(403)
+        .send("You are not allowed to delete this listing");
+    }
+
+    await Listing.findByIdAndDelete(id);
+
+    res.redirect("/listings");
+  }
+);
+
+
+// ====================
+// Sample Data Route
+// ====================
+
 app.get("/testListing", async (req, res) => {
-  let sampleListing = new Listing({
+  const sampleListing = new Listing({
     title: "My new Villa",
     description: "by the beach",
     price: 1200,
     location: "Calangute, Goa",
-    country: "India",
+    country: "India"
   });
+
   await sampleListing.save();
+
   console.log("sample was saved");
+
   res.send("successful testing");
 });
+
+
+// ====================
+// Error Handler
+// ====================
 
 app.use((err, req, res, next) => {
   console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
   console.log("ERROR DETAILS:", err);
   console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-  res.status(500).send(err.message); // This will show the specific error on the page
+
+  res.status(500).send(err.message);
 });
+
+
+// ====================
+// Server
+// ====================
 
 app.listen(8080, () => {
   console.log("app is listening on port 8080");
 });
+
 
 module.exports = app;
