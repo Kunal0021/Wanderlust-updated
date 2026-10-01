@@ -1,29 +1,45 @@
-<div class="container mt-5">
-    <h2 class="mb-4">Create an Account</h2>
+<link rel="stylesheet" href="/css/auth.css">
 
-    <form action="/auth/signup" method="POST">
+<div class="auth-container">
 
-        <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
+    <div class="auth-card">
 
-            <input type="text" id="username" name="username" class="form-control" required>
+        <div class="auth-header">
+            <h2>Create Account</h2>
+            <p>Join Wanderlust and start exploring</p>
         </div>
 
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
+        <form action="/auth/signup" method="POST">
 
-            <input type="email" id="email" name="email" class="form-control" required>
-        </div>
+            <div class="form-group">
+                <label for="username">Username</label>
 
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
+                <input type="text" id="username" name="username" placeholder="Choose a username" required>
+            </div>
 
-            <input type="password" id="password" name="password" class="form-control" required>
-        </div>
+            <div class="form-group">
+                <label for="email">Email</label>
 
-        <button type="submit" class="btn btn-primary">
-            Sign Up
-        </button>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
 
-    </form>
+            <div class="form-group">
+                <label for="password">Password</label>
+
+                <input type="password" id="password" name="password" placeholder="Create a password" required>
+            </div>
+
+            <button type="submit" class="auth-btn">
+                Sign Up
+            </button>
+
+        </form>
+
+        <p class="auth-footer">
+            Already have an account?
+            <a href="/auth/login">Login</a>
+        </p>
+
+    </div>
+
 </div>

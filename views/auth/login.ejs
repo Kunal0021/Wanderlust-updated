@@ -1,23 +1,39 @@
-<div class="container mt-5">
-    <h2 class="mb-4">Login</h2>
+<link rel="stylesheet" href="/css/auth.css">
 
-    <form action="/auth/login" method="POST">
+<div class="auth-container">
 
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
+    <div class="auth-card">
 
-            <input type="email" id="email" name="email" class="form-control" required>
+        <div class="auth-header">
+            <h2>Welcome Back</h2>
+            <p>Login to continue to Wanderlust</p>
         </div>
 
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
+        <form action="/auth/login" method="POST">
 
-            <input type="password" id="password" name="password" class="form-control" required>
-        </div>
+            <div class="form-group">
+                <label for="email">Email</label>
 
-        <button type="submit" class="btn btn-primary">
-            Login
-        </button>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
 
-    </form>
+            <div class="form-group">
+                <label for="password">Password</label>
+
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="auth-btn">
+                Login
+            </button>
+
+        </form>
+
+        <p class="auth-footer">
+            Don't have an account?
+            <a href="/auth/signup">Create an account</a>
+        </p>
+
+    </div>
+
 </div>
