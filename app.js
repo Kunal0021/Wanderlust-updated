@@ -128,8 +128,24 @@ main()
 // Home Route
 // ====================
 
-app.get("/", (req, res) => {
-  res.send("Hi, I am root");
+app.get("/", async (req, res) => {
+  try {
+    let featuredListings = [];
+    
+    // Check Redis cache first
+    const cachedListings = await redisClient.get("listings:all");
+
+    if (cachedListings) {
+      featuredListings = JSON.parse(cachedListings).slice(0, 8);
+    } else {
+      featuredListings = await Listing.find({}).limit(8);
+    }
+
+    res.render("home.ejs", { featuredListings });
+  } catch (error) {
+    console.log("Home route error:", error);
+    res.render("home.ejs", { featuredListings: [] });
+  }
 });
 
 

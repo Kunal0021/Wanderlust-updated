@@ -1,41 +1,35 @@
-<nav class="navbar navbar-expand-md bg-light border-bottom">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/"><i class="fa-solid fa-compass"></i></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+<nav class="navbar navbar-expand-md sticky-top border-bottom">
+  <div class="container-fluid container-xxl px-3 px-md-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+      <i class="fa-solid fa-compass brand-icon"></i>
+      <span class="brand-text">wanderlust</span>
+    </a>
+    <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
       aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-link active" href="/">Home</a>
-        <a class="nav-link" href="/listings">All Listings</a>
-        <a class="nav-link" href="/listings/new">Add new listing</a>
-
+      <div class="navbar-nav me-auto ps-md-4">
+        <a class="nav-link px-3" href="/">Home</a>
+        <a class="nav-link px-3" href="/listings">Explore All</a>
+        <a class="nav-link px-3" href="/listings/new">+ Become a Host</a>
+      </div>
+      <div class="navbar-nav ms-auto align-items-md-center gap-2 pt-2 pt-md-0">
+        <% if (!currentUser) { %>
+          <a href="/auth/login" class="nav-link fw-bold px-3">Log In</a>
+          <a href="/auth/signup" class="btn btn-danger-accent rounded-pill px-4 py-2 btn-sm fw-bold ms-md-2">Sign Up</a>
+        <% } else { %>
+          <div class="px-3 py-1 bg-light rounded-pill d-inline-flex align-items-center gap-2 border">
+            <i class="fa-solid fa-circle-user text-danger fs-5"></i>
+            <span class="fw-bold text-dark small"><%= currentUser.username %></span>
+          </div>
+          <form action="/auth/logout" method="POST" class="d-inline m-0">
+            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold ms-2">
+              <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+            </button>
+          </form>
+        <% } %>
       </div>
     </div>
   </div>
 </nav>
-
-<% if (!currentUser) { %>
-
-  <a href="/auth/login" class="nav-link">
-    Login
-  </a>
-
-  <a href="/auth/signup" class="nav-link">
-    Sign Up
-  </a>
-
-  <% } else { %>
-
-    <span class="nav-link">
-      Welcome, <%= currentUser.username %>
-    </span>
-
-    <form action="/auth/logout" method="POST" style="display: inline;">
-      <button type="submit" class="nav-link btn btn-link">
-        Logout
-      </button>
-    </form>
-
-    <% } %>

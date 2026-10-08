@@ -1,21 +1,35 @@
 <%- layout('layouts/boilerplate') -%>
 
-  <h3>All Listings</h3>
-
-  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
-    <% for(let listing of allListings) { %>
-      <a href="/listings/<%= listing._id %>" class="listing-link">
-        <div class="card col" style="width: 20rem;">
-          <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image" style="height: 20rem;">
-          <div class="card-body">
-            <p class="card-text">
-              <b>
-                <%= listing.title %>
-              </b><br>
-              &#8377;<%= listing.price %>/night
-            </p>
-          </div>
-        </div>
-      </a>
-      <% } %>
+<div class="container my-4">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h3 class="fw-bold m-0">All Listings</h3>
+    <a href="/listings/new" class="btn btn-danger-accent rounded-pill px-4 fw-semibold">+ Add New Listing</a>
   </div>
+
+  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-4">
+    <% for(let listing of allListings) { %>
+      <div class="col">
+        <a href="/listings/<%= listing._id %>" class="listing-card-wrapper">
+          <div class="custom-card card">
+            <div class="card-img-wrapper">
+              <img src="<%= listing.image.url %>" class="card-img-top" alt="<%= listing.title %>">
+              <span class="card-badge">POPULAR</span>
+              <button class="wishlist-btn" type="button" onclick="event.preventDefault(); this.classList.toggle('active');">
+                <i class="fa-solid fa-heart"></i>
+              </button>
+            </div>
+            <div class="card-body card-body-custom">
+              <h5 class="card-title-custom"><%= listing.title %></h5>
+              <p class="card-location-custom"><i class="fa-solid fa-location-dot me-1 text-muted"></i><%= listing.location || 'Featured Location' %>, <%= listing.country || 'Global' %></p>
+              <div class="d-flex align-items-baseline gap-1">
+                <span class="card-price-custom">&#8377;<span class="price-number" data-base-price="<%= listing.price %>"><%= listing.price %></span></span>
+                <span class="text-muted fs-6">/ night</span>
+                <span class="tax-info ms-2">+18% GST</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    <% } %>
+  </div>
+</div>

@@ -1,27 +1,61 @@
 <footer>
-    <div class="f-info">
-
-        <div class="f-info-socials">
-
-
-         <i class="fa-brands fa-facebook"></i>
-
-         <i class="fa-brands fa-square-instagram"></i>
-
-         <i class="fa-brands fa-square-linkedin"></i>
+  <div class="container-xxl px-3 px-md-4">
+    <div class="row g-4 pb-4 border-bottom border-secondary border-opacity-25">
+      <div class="col-lg-4 col-md-6">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <i class="fa-solid fa-compass text-danger fs-3"></i>
+          <span class="f-brand-title">wanderlust</span>
         </div>
+        <p class="text-secondary small pe-lg-4 mb-4">
+          Discover extraordinary places to stay, luxury villas, beachfront retreats, and unique experiences around the globe.
+        </p>
+        <div class="d-flex align-items-center gap-2">
+          <a href="#" class="f-social-icon" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" class="f-social-icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" class="f-social-icon" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
+          <a href="#" class="f-social-icon" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+      </div>
 
+      <div class="col-lg-2 col-md-6">
+        <h6 class="text-white fw-bold mb-3">Explore</h6>
+        <ul class="list-unstyled f-info-links d-flex flex-column gap-2 small m-0">
+          <li><a href="/listings">All Destinations</a></li>
+          <li><a href="/listings?category=trending">Trending Stays</a></li>
+          <li><a href="/listings?category=beachfront">Beachfront Villas</a></li>
+          <li><a href="/listings?category=mountains">Mountain Cabins</a></li>
+        </ul>
+      </div>
 
-       <div> &copy; wanderlust-pvt-limited</div>
+      <div class="col-lg-2 col-md-6">
+        <h6 class="text-white fw-bold mb-3">Hosting</h6>
+        <ul class="list-unstyled f-info-links d-flex flex-column gap-2 small m-0">
+          <li><a href="/listings/new">List Your Property</a></li>
+          <li><a href="#">Host Resources</a></li>
+          <li><a href="#">Community Forum</a></li>
+          <li><a href="#">Host Protection</a></li>
+        </ul>
+      </div>
 
-       <div class="f-info-links">
-        <a href="/privacy">privacy</a>
+      <div class="col-lg-4 col-md-6">
+        <h6 class="text-white fw-bold mb-3">Stay Updated</h6>
+        <p class="text-secondary small mb-3">Subscribe to get secret travel deals and handpicked stays in your inbox.</p>
+        <form onsubmit="event.preventDefault(); alert('Thank you for subscribing to Wanderlust newsletter!');" class="d-flex gap-2">
+          <input type="email" class="form-control form-control-sm bg-dark text-white border-secondary rounded-pill px-3" placeholder="Enter your email..." required>
+          <button type="submit" class="btn btn-danger-accent btn-sm rounded-pill px-4 fw-bold">Join</button>
+        </form>
+      </div>
+    </div>
 
-
-        <a href="/terms">Terms</a>
-       </div>
-
-</div>
-    
-
+    <div class="d-flex flex-column flex-md-row align-items-center justify-content-between pt-4 small text-secondary">
+      <div>&copy; <%= new Date().getFullYear() %> Wanderlust Private Limited. All rights reserved.</div>
+      <div class="f-info-links d-flex align-items-center gap-3 mt-3 mt-md-0">
+        <a href="/privacy">Privacy Policy</a>
+        <span>&bull;</span>
+        <a href="/terms">Terms of Service</a>
+        <span>&bull;</span>
+        <a href="#">Sitemap</a>
+      </div>
+    </div>
+  </div>
 </footer>
