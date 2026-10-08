@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 const initData = require("./data.js");
 const Listing = require("./listing.js"); // Fixed path
 
-const dbUrl = process.env.ATLASDB_URL || "mongodb+srv://Wanderlust_admin:YAdJ9amNQPYIg800@cluster0.dxkke8w.mongodb.net/myapp";
+const dbUrl = process.env.ATLASDB_URL;
 
 main()
   .then(() => {
